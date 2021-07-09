@@ -57,7 +57,13 @@ class AttentionWalkLayer(torch.nn.Module):
         :return loss: Loss being minimized.
         """
         self.attention_probs = torch.nn.functional.softmax(self.attention, dim=0)
+        self.attention_probs = self.attention_probs.to('cuda:0')
+
+        adjacency_opposite = adjacency_opposite.to('cuda:0')
+
         probs = self.attention_probs.unsqueeze(1).expand_as(weighted_target_tensor)
+
+        weighted_target_tensor = weighted_target_tensor.to('cuda:0')
         weighted_target_tensor = weighted_target_tensor * probs
         weighted_tar_mat = torch.sum(weighted_target_tensor, dim=0)
         weighted_tar_mat = weighted_tar_mat.view(self.shapes[1], self.shapes[2])
@@ -97,6 +103,7 @@ class AttentionWalkTrainer(object):
         self.adjacency_opposite = adjacency_opposite_calculator(self.graph)
         self.adjacency_opposite = torch.FloatTensor(self.adjacency_opposite)
         self.model = AttentionWalkLayer(self.args, self.target_tensor.shape)
+        self.model.to(torch.device("cuda:0"))
 
     def fit(self):
         """
@@ -122,8 +129,8 @@ class AttentionWalkTrainer(object):
         """
         Saving the embedding matrices as one unified embedding.
         """
-        left = self.model.left_factors.detach().numpy()
-        right = self.model.right_factors.detach().numpy().T
+        left = self.model.left_factors.detach().cpu().numpy()
+        right = self.model.right_factors.detach().cpu().numpy().T
         indices = np.array([range(len(self.graph))]).reshape(-1, 1)
         embedding = np.concatenate([indices, left, right], axis=1)
         columns = ["id"] + ["x_" + str(x) for x in range(self.args.dimensions)]
@@ -134,7 +141,7 @@ class AttentionWalkTrainer(object):
         """
         Saving the attention vector.
         """
-        attention = self.model.attention_probs.detach().numpy()
+        attention = self.model.attention_probs.detach().cpu().numpy()
         indices = np.array([range(self.args.window_size)]).reshape(-1, 1)
         attention = np.concatenate([indices, attention], axis=1)
         attention = pd.DataFrame(attention, columns=["Order", "Weight"])
