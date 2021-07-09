@@ -102,16 +102,14 @@ class AttentionWalkTrainer(object):
         """
         Fitting the model
         """
-        print("\nTraining the model.\n")
         self.model.train()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
-        self.epochs = trange(self.args.epochs, desc="Loss")
+        self.epochs = range(self.args.epochs)
         for _ in self.epochs:
             self.optimizer.zero_grad()
             loss = self.model(self.target_tensor, self.adjacency_opposite)
             loss.backward()
             self.optimizer.step()
-            self.epochs.set_description("Attention Walk (Loss=%g)" % round(loss.item(), 4))
 
     def save_model(self):
         """
@@ -124,7 +122,6 @@ class AttentionWalkTrainer(object):
         """
         Saving the embedding matrices as one unified embedding.
         """
-        print("\nSaving the model.\n")
         left = self.model.left_factors.detach().numpy()
         right = self.model.right_factors.detach().numpy().T
         indices = np.array([range(len(self.graph))]).reshape(-1, 1)

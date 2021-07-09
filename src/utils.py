@@ -61,7 +61,7 @@ def feature_calculator(args, graph):
     target_matrices = [normalized_adjacency_matrix.todense()]
     powered_A = normalized_adjacency_matrix
     if args.window_size > 1:
-        for power in tqdm(range(args.window_size-1), desc="Adjacency matrix powers"):
+        for power in range(args.window_size-1):
             powered_A = powered_A.dot(normalized_adjacency_matrix)
             to_add = powered_A.todense()
             target_matrices.append(to_add)
