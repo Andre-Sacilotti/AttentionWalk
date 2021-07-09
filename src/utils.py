@@ -20,7 +20,6 @@ def read_graph(graph_path):
     :param args: Arguments object.
     :return graph: graph.
     """
-    print("\nTarget matrix creation started.\n")
     graph = nx.from_edgelist(pd.read_csv(graph_path).values.tolist())
     graph.remove_edges_from(nx.selfloop_edges(graph))
     return graph
