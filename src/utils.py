@@ -1,11 +1,18 @@
 """Reading and writing data."""
 
-import numpy as np
 import pandas as pd
 import networkx as nx
 from tqdm import tqdm
 from scipy import sparse
 from texttable import Texttable
+import torch
+import numpy as np
+import random
+
+# Reproductabilidade
+torch.manual_seed(0)
+random.seed(0)
+np.random.seed(0)
 
 def read_graph(graph_path):
     """
@@ -37,6 +44,9 @@ def feature_calculator(args, graph):
     :param graph: NetworkX graph.
     :return target_matrices: Target tensor.
     """
+    torch.manual_seed(0)
+    random.seed(0)
+    np.random.seed(0)
     index_1 = [edge[0] for edge in graph.edges()] + [edge[1] for edge in graph.edges()]
     index_2 = [edge[1] for edge in graph.edges()] + [edge[0] for edge in graph.edges()]
     values = [1 for edge in index_1]
@@ -64,6 +74,9 @@ def adjacency_opposite_calculator(graph):
     :param graph: NetworkX object.
     :return adjacency_matrix_opposite: Indicator matrix.
     """
+    torch.manual_seed(0)
+    random.seed(0)
+    np.random.seed(0)
     adjacency_matrix = sparse.csr_matrix(nx.adjacency_matrix(graph), dtype=np.float32).todense()
     adjacency_matrix_opposite = np.ones(adjacency_matrix.shape) - adjacency_matrix
     return adjacency_matrix_opposite

@@ -5,6 +5,12 @@ import numpy as np
 import pandas as pd
 from tqdm import trange
 from utils import read_graph, feature_calculator, adjacency_opposite_calculator
+import random
+
+# Reproductabilidade do codigo
+torch.manual_seed(0)
+random.seed(0)
+np.random.seed(0)
 
 class AttentionWalkLayer(torch.nn.Module):
     """
@@ -17,6 +23,9 @@ class AttentionWalkLayer(torch.nn.Module):
         :param args: Arguments object.
         :param shapes: Shape of the target tensor.
         """
+        torch.manual_seed(0)
+        random.seed(0)
+        np.random.seed(0)
         super(AttentionWalkLayer, self).__init__()
         self.args = args
         self.shapes = shapes
@@ -72,6 +81,9 @@ class AttentionWalkTrainer(object):
         Initializing the training object.
         :param args: Arguments object.
         """
+        torch.manual_seed(0)
+        random.seed(0)
+        np.random.seed(0)
         self.args = args
         self.graph = read_graph(self.args.edge_path)
         self.initialize_model_and_features()
